@@ -1,6 +1,8 @@
-package com.bethwelamkenya.churchcompose.ui.pages
+package com.bethwelamkenya.churchcompose.ui.layouts
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardActions
@@ -20,7 +22,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.bethwelamkenya.churchcompose.R
 import com.bethwelamkenya.churchcompose.ui.theme.*
 
@@ -36,6 +37,8 @@ fun AdminHomePage(){
             ToolBar("Bethwel", " not")
 //            AdminMainPage()
             AddMemberPage()
+//            AttendancesPage()
+//            SpecificPage()
         }
     }
 }
@@ -179,15 +182,22 @@ fun AdminMainPage(){
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddMemberPage() {
+    val schools = arrayOf("Engineering", "Education", "Science", "Arts", "Business", "Law", "Medicine", "Aerospace", "Community")
+    val departments = arrayOf("Media", "Keyboardist", "Worshipper", "Usher", "Technician", "Intercessor",
+        "Security", "Protocol", "Sanitation", "Violinist", "None")
+    val years = arrayOf("Community", "One", "Two", "Three", "Four", "Five")
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var regNo by remember { mutableStateOf("") }
     var number by remember { mutableStateOf("") }
-    var school by remember { mutableStateOf("") }
-    var year by remember { mutableStateOf("") }
-    var department by remember { mutableStateOf("") }
+    var school by remember { mutableStateOf("Engineering") }
+    var year by remember { mutableStateOf("Community") }
+    var department by remember { mutableStateOf("Media") }
     var residence by remember { mutableStateOf("") }
-    val focusRequesters = List(8) { FocusRequester() }
+    var schoolExpanded by remember { mutableStateOf(false) }
+    var yearExpanded by remember { mutableStateOf(false) }
+    var departmentExpanded by remember { mutableStateOf(false) }
+    val focusRequesters = List(5) { FocusRequester() }
     LazyColumn(modifier = Modifier.fillMaxWidth()) {
         item {
             Column(modifier = Modifier.fillMaxWidth()) {
@@ -254,48 +264,127 @@ fun AddMemberPage() {
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(text = "School", color = Color.LightGray, modifier = Modifier.offset(x = 10.dp))
                 Spacer(modifier = Modifier.height(10.dp))
-                OutlinedTextField(value = school, onValueChange = {school = it},
-                    label = { Text(text = "School", color = Color.Gray)},
-                    colors = TextFieldDefaults.textFieldColors(TextWhite, unfocusedTextColor = TextWhite, containerColor = Color.Transparent),
-                    singleLine = true,
-                    textStyle = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier
-                        .fillMaxWidth(0.95F)
-                        .focusRequester(focusRequesters[4])
-                        .align(Alignment.CenterHorizontally),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                    keyboardActions = KeyboardActions(onNext = { focusRequesters[5].requestFocus() }),
-                )
+                Box(modifier = Modifier.fillMaxWidth(0.9F)
+                    .offset(x = 10.dp)) {
+                    Row(horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .align(Alignment.CenterStart)
+                            .border(width = 1.dp, color = MainLight, shape = ShapeDefaults.ExtraSmall)
+                            .padding(10.dp)
+                    ) {
+                        Text(text = school, color = TextWhite,
+                            modifier = Modifier.clickable( onClick = {schoolExpanded = !schoolExpanded}))
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Icon(painter = painterResource(id = R.drawable.expand_arrow), contentDescription = "Expand",
+                            modifier = Modifier
+                                .clickable(onClick = { schoolExpanded = !schoolExpanded })
+                                .size(20.dp), tint = Color.White)
+                    }
+                    DropdownMenu(expanded = schoolExpanded, onDismissRequest = { schoolExpanded = false},
+                        modifier = Modifier.background(MainDark, shape = ShapeDefaults.ExtraSmall),
+                    ) {
+                        schools.forEach {
+                            DropdownMenuItem(text = { Text(text = it, color = TextWhite)}, onClick = {
+                                schoolExpanded = false
+                                school = it
+                            })
+                        }
+                    }
+                }
+//                OutlinedTextField(value = school, onValueChange = {school = it},
+//                    label = { Text(text = "School", color = Color.Gray)},
+//                    colors = TextFieldDefaults.textFieldColors(TextWhite, unfocusedTextColor = TextWhite, containerColor = Color.Transparent),
+//                    singleLine = true,
+//                    textStyle = MaterialTheme.typography.bodyLarge,
+//                    modifier = Modifier
+//                        .fillMaxWidth(0.95F)
+//                        .focusRequester(focusRequesters[4])
+//                        .align(Alignment.CenterHorizontally),
+//                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+//                    keyboardActions = KeyboardActions(onNext = { focusRequesters[5].requestFocus() }),
+//                )
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(text = "Year", color = Color.LightGray, modifier = Modifier.offset(x = 10.dp))
                 Spacer(modifier = Modifier.height(10.dp))
-                OutlinedTextField(value = year, onValueChange = {year = it},
-                    label = { Text(text = "Year", color = Color.Gray)},
-                    colors = TextFieldDefaults.textFieldColors(TextWhite, unfocusedTextColor = TextWhite, containerColor = Color.Transparent),
-                    singleLine = true,
-                    textStyle = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier
-                        .fillMaxWidth(0.95F)
-                        .focusRequester(focusRequesters[5])
-                        .align(Alignment.CenterHorizontally),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next, keyboardType = KeyboardType.Number),
-                    keyboardActions = KeyboardActions(onNext = { focusRequesters[6].requestFocus() }),
-                )
+                Box(modifier = Modifier.fillMaxWidth(0.9F)
+                    .offset(x = 10.dp)) {
+                    Row(horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .align(Alignment.CenterStart)
+                            .border(width = 1.dp, color = MainLight, shape = ShapeDefaults.ExtraSmall)
+                            .padding(10.dp)
+                    ) {
+                        Text(text = year, color = TextWhite,
+                            modifier = Modifier.clickable( onClick = {yearExpanded = !yearExpanded}))
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Icon(painter = painterResource(id = R.drawable.expand_arrow), contentDescription = "Expand",
+                            modifier = Modifier
+                                .clickable(onClick = { yearExpanded = !yearExpanded })
+                                .size(20.dp), tint = Color.White)
+                    }
+                    DropdownMenu(expanded = yearExpanded, onDismissRequest = { yearExpanded = false},
+                        modifier = Modifier.background(MainDark, shape = ShapeDefaults.ExtraSmall)) {
+                        years.forEach {
+                            DropdownMenuItem(text = { Text(text = it, color = TextWhite)}, onClick = {
+                                yearExpanded = false
+                                year = it
+                            })
+                        }
+                    }
+                }
+//                OutlinedTextField(value = year, onValueChange = {year = it},
+//                    label = { Text(text = "Year", color = Color.Gray)},
+//                    colors = TextFieldDefaults.textFieldColors(TextWhite, unfocusedTextColor = TextWhite, containerColor = Color.Transparent),
+//                    singleLine = true,
+//                    textStyle = MaterialTheme.typography.bodyLarge,
+//                    modifier = Modifier
+//                        .fillMaxWidth(0.95F)
+//                        .focusRequester(focusRequesters[5])
+//                        .align(Alignment.CenterHorizontally),
+//                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next, keyboardType = KeyboardType.Number),
+//                    keyboardActions = KeyboardActions(onNext = { focusRequesters[6].requestFocus() }),
+//                )
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(text = "Department", color = Color.LightGray, modifier = Modifier.offset(x = 10.dp))
                 Spacer(modifier = Modifier.height(10.dp))
-                OutlinedTextField(value = department, onValueChange = {department = it},
-                    label = { Text(text = "Department", color = Color.Gray)},
-                    colors = TextFieldDefaults.textFieldColors(TextWhite, unfocusedTextColor = TextWhite, containerColor = Color.Transparent),
-                    singleLine = true,
-                    textStyle = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier
-                        .fillMaxWidth(0.95F)
-                        .focusRequester(focusRequesters[6])
-                        .align(Alignment.CenterHorizontally),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                    keyboardActions = KeyboardActions(onNext = { focusRequesters[7].requestFocus() }),
-                )
+                Box(modifier = Modifier.fillMaxWidth(0.9F)
+                    .offset(x = 10.dp)) {
+                    Row(horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .align(Alignment.CenterStart)
+                            .border(width = 1.dp, color = MainLight, shape = ShapeDefaults.ExtraSmall)
+                            .padding(10.dp)
+                    ) {
+                        Text(text = department, color = TextWhite,
+                            modifier = Modifier.clickable( onClick = {departmentExpanded = !departmentExpanded}))
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Icon(painter = painterResource(id = R.drawable.expand_arrow), contentDescription = "Expand",
+                            modifier = Modifier
+                                .clickable(onClick = { departmentExpanded = !departmentExpanded })
+                                .size(20.dp), tint = Color.White)
+                    }
+                    DropdownMenu(expanded = departmentExpanded, onDismissRequest = { departmentExpanded = false},
+                        modifier = Modifier.background(MainDark, shape = ShapeDefaults.ExtraSmall)) {
+                        departments.forEach {
+                            DropdownMenuItem(text = { Text(text = it, color = TextWhite)}, onClick = {
+                                departmentExpanded = false
+                                department = it
+                            })
+                        }
+                    }
+                }
+//                OutlinedTextField(value = department, onValueChange = {department = it},
+//                    label = { Text(text = "Department", color = Color.Gray)},
+//                    colors = TextFieldDefaults.textFieldColors(TextWhite, unfocusedTextColor = TextWhite, containerColor = Color.Transparent),
+//                    singleLine = true,
+//                    textStyle = MaterialTheme.typography.bodyLarge,
+//                    modifier = Modifier
+//                        .fillMaxWidth(0.95F)
+//                        .focusRequester(focusRequesters[6])
+//                        .align(Alignment.CenterHorizontally),
+//                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+//                    keyboardActions = KeyboardActions(onNext = { focusRequesters[7].requestFocus() }),
+//                )
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(text = "Residence", color = Color.LightGray, modifier = Modifier.offset(x = 10.dp))
                 Spacer(modifier = Modifier.height(10.dp))
@@ -306,10 +395,10 @@ fun AddMemberPage() {
                     textStyle = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier
                         .fillMaxWidth(0.95F)
-                        .focusRequester(focusRequesters[7])
+                        .focusRequester(focusRequesters[4])
                         .align(Alignment.CenterHorizontally),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                    keyboardActions = KeyboardActions(onDone = { focusRequesters[7].freeFocus()}, onGo = { focusRequesters[7].freeFocus()}),
+                    keyboardActions = KeyboardActions(onDone = { focusRequesters[4].freeFocus()}, onGo = { focusRequesters[4].freeFocus()}),
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()){
@@ -338,29 +427,29 @@ fun AddMemberPage() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditMemberPage(
-    passid: Long = 0L,
-    passname: String = "",
-    passemail: String = "",
-    passregNo: String = "",
-    passnumber: Long = 712345678L,
-    passchool: String = "",
-    passyear: Int = 0,
-    passdepartment: String = "",
-    passresidence: String = ""
+    passId: Long = 0L,
+    passName: String = "",
+    passEmail: String = "",
+    passRegNo: String = "",
+    passNumber: Long = 712345678L,
+    passSchool: String = "",
+    passYear: Int = 0,
+    passDepartment: String = "",
+    passResidence: String = ""
 ) {
     val schools = arrayOf("Engineering", "Education", "Science", "Arts", "Business", "Law", "Medicine", "Aerospace", "Community")
     val departments = arrayOf("Media", "Keyboardist", "Worshipper", "Usher", "Technician", "Intercessor",
         "Security", "Protocol", "Sanitation", "Violinist", "Pastor", "Bishop", "None")
     val years = arrayOf("Community", "One", "Two", "Three", "Four", "Five")
-    var id by remember { mutableStateOf(passid.toString()) }
-    var name by remember { mutableStateOf(passname) }
-    var email by remember { mutableStateOf(passemail) }
-    var regNo by remember { mutableStateOf(passregNo) }
-    var number by remember { mutableStateOf(passnumber.toString()) }
-    var school by remember { mutableStateOf(passchool) }
-    var year by remember { mutableStateOf(years[passyear]) }
-    var department by remember { mutableStateOf(passdepartment) }
-    var residence by remember { mutableStateOf(passresidence) }
+    var id by remember { mutableStateOf(passId.toString()) }
+    var name by remember { mutableStateOf(passName) }
+    var email by remember { mutableStateOf(passEmail) }
+    var regNo by remember { mutableStateOf(passRegNo) }
+    var number by remember { mutableStateOf(passNumber.toString()) }
+    var school by remember { mutableStateOf(passSchool) }
+    var year by remember { mutableStateOf(years[passYear]) }
+    var department by remember { mutableStateOf(passDepartment) }
+    var residence by remember { mutableStateOf(passResidence) }
     val focusRequesters = List(8) { FocusRequester() }
     LazyColumn(modifier = Modifier.fillMaxWidth()) {
         item {
@@ -517,6 +606,168 @@ fun EditMemberPage(
                     }
                 }
                 Spacer(modifier = Modifier.height(10.dp))
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AttendancesPage() {
+    var dateSelected by remember { mutableStateOf("") }
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+            Button(onClick = { /*TODO*/ }, modifier = Modifier
+                .fillMaxWidth(0.4F)
+                .height(75.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Main)
+            ) {
+                Icon(painter = painterResource(id = R.drawable.edit_calendar), contentDescription = "Set date")
+                Spacer(modifier = Modifier.width(10.dp))
+                Text(text = "Set Date")
+            }
+            TextField(value = dateSelected, onValueChange = {dateSelected = it}, label = { Text(text = "Set Date")},
+                modifier = Modifier.fillMaxWidth(0.9F), singleLine = true,
+                colors = TextFieldDefaults.textFieldColors(TextWhite, unfocusedTextColor = TextWhite, containerColor = Color.Transparent),
+                readOnly = true
+            )
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+        Button(onClick = { /*TODO*/ }, modifier = Modifier
+            .fillMaxWidth(0.8F)
+            .align(Alignment.CenterHorizontally)
+            .height(75.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Main)
+        ) {
+            Icon(painter = painterResource(id = R.drawable.database_restore), contentDescription = "Fetch Data")
+            Spacer(modifier = Modifier.width(10.dp))
+            Text(text = "Fetch Data")
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SpecificPage() {
+    var dateSelected by remember { mutableStateOf("") }
+    var expanded by remember { mutableStateOf(false) }
+    var allDates by remember { mutableStateOf(true) }
+    var specificDates by remember { mutableStateOf(false) }
+    var selectedMember by remember { mutableStateOf(0) }
+    val membersList = listOf("Item 1", "Item 2", "Item 3")
+    LazyColumn(modifier = Modifier.fillMaxWidth()){
+        item {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Row(horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)) {
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Text(text = "Select Member", color = Color.LightGray, modifier = Modifier.fillMaxWidth(0.4F))
+                    Box(modifier = Modifier.wrapContentSize(Alignment.CenterEnd)) {
+                        Row(horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.align(Alignment.CenterEnd)
+                        ) {
+                            Text(text = membersList[selectedMember], color = TextWhite,
+                                modifier = Modifier.clickable( onClick = {expanded = !expanded}))
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Icon(painter = painterResource(id = R.drawable.expand_arrow), contentDescription = "Expand",
+                                modifier = Modifier
+                                    .clickable(onClick = { expanded = !expanded })
+                                    .size(20.dp), tint = Color.White)
+                        }
+                        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false}, modifier = Modifier.background(MainDark)) {
+                            membersList.forEach {
+                                DropdownMenuItem(text = { Text(text = it, color = TextWhite)}, onClick = {
+                                    expanded = false
+                                    selectedMember = membersList.indexOf(it)
+                                })
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(10.dp))
+                }
+                Row(horizontalArrangement = Arrangement.SpaceEvenly) {
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Column(modifier = Modifier.fillMaxWidth(0.5F)) {
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                            Checkbox(checked = allDates, onCheckedChange = {
+                                allDates = it
+                                specificDates = !it })
+                            Text(text = "All Dates", color = Color.LightGray)
+                        }
+                        TextField(value = dateSelected, onValueChange = {dateSelected = it}, label = { Text(text = "Start Date")},
+                            modifier = Modifier.fillMaxWidth(0.9F), singleLine = true, enabled = specificDates,
+                            colors = TextFieldDefaults.textFieldColors(TextWhite, unfocusedTextColor = TextWhite, containerColor = Color.Transparent),
+                            readOnly = true
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Button(onClick = { /*TODO*/ }, modifier = Modifier
+                            .fillMaxWidth(0.9F)
+                            .height(75.dp), enabled = specificDates,
+                            colors = ButtonDefaults.buttonColors(containerColor = Main)
+                        ) {
+                            Icon(painter = painterResource(id = R.drawable.edit_calendar), contentDescription = "Start date")
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Text(text = "Start Date")
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Column(Modifier.fillMaxWidth()) {
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                            Checkbox(checked = specificDates, onCheckedChange = {
+                                specificDates = it
+                                allDates = !it })
+                            Text(text = "Specific", color = Color.LightGray)
+                        }
+                        TextField(value = dateSelected, onValueChange = {dateSelected = it}, label = { Text(text = "End Date")},
+                            modifier = Modifier.fillMaxWidth(0.9F), singleLine = true, enabled = specificDates,
+                            colors = TextFieldDefaults.textFieldColors(TextWhite, unfocusedTextColor = TextWhite, containerColor = Color.Transparent),
+                            readOnly = true
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Button(onClick = { /*TODO*/ }, modifier = Modifier
+                            .fillMaxWidth(0.9F)
+                            .height(75.dp), enabled = specificDates,
+                            colors = ButtonDefaults.buttonColors(containerColor = Main)
+                        ) {
+                            Text(text = "End Date")
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Icon(painter = painterResource(id = R.drawable.edit_calendar), contentDescription = "End date")
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(10.dp))
+                }
+
+//        Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
+//            Text(
+//                text = "Click to open menu",
+//                modifier = Modifier.clickable(onClick = { expanded = true })
+//            )
+//            DropdownMenu(
+//                expanded = expanded,
+//                onDismissRequest = { expanded = false }
+//            ) {
+//                items.forEach { label ->
+//                    DropdownMenuItem(onClick = {
+//                        // Handle item click
+//                        expanded = false}) {
+//                        Text(text = label)
+//                    }
+//                }
+//            }
+//        }
+                Spacer(modifier = Modifier.height(10.dp))
+                Button(onClick = { /*TODO*/ }, modifier = Modifier
+                    .fillMaxWidth(0.8F)
+                    .align(Alignment.CenterHorizontally)
+                    .height(75.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Main)
+                ) {
+                    Icon(painter = painterResource(id = R.drawable.database_restore), contentDescription = "Fetch Data")
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Text(text = "Fetch Data")
+                }
             }
         }
     }

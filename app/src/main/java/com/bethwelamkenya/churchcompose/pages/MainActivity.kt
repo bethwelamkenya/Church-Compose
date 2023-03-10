@@ -1,4 +1,4 @@
-package com.bethwelamkenya.churchcompose
+package com.bethwelamkenya.churchcompose.pages
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -18,7 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import com.bethwelamkenya.churchcompose.ui.pages.AdminHomePage
+import com.bethwelamkenya.churchcompose.ui.layouts.AdminHomePage
 import com.bethwelamkenya.churchcompose.ui.theme.ChurchComposeTheme
 
 class MainActivity : ComponentActivity() {
