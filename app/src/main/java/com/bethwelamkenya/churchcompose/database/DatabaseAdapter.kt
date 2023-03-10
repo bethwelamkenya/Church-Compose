@@ -533,4 +533,5 @@ class DatabaseAdapter  (context: Context) : SQLiteOpenHelper(context, database_n
             null
         }
     }
+
 }
