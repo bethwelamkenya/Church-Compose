@@ -1,4 +1,4 @@
-package models
+package com.bethwelamkenya.churchcompose.models
 
 data class MemberAttendance(
     val attendanceID: Long,
