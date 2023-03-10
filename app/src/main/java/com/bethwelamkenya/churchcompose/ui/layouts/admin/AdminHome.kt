@@ -1,4 +1,4 @@
-package com.bethwelamkenya.churchcompose.ui.layouts
+package com.bethwelamkenya.churchcompose.ui.layouts.admin
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -291,18 +291,6 @@ fun AddMemberPage() {
                         }
                     }
                 }
-//                OutlinedTextField(value = school, onValueChange = {school = it},
-//                    label = { Text(text = "School", color = Color.Gray)},
-//                    colors = TextFieldDefaults.textFieldColors(TextWhite, unfocusedTextColor = TextWhite, containerColor = Color.Transparent),
-//                    singleLine = true,
-//                    textStyle = MaterialTheme.typography.bodyLarge,
-//                    modifier = Modifier
-//                        .fillMaxWidth(0.95F)
-//                        .focusRequester(focusRequesters[4])
-//                        .align(Alignment.CenterHorizontally),
-//                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-//                    keyboardActions = KeyboardActions(onNext = { focusRequesters[5].requestFocus() }),
-//                )
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(text = "Year", color = Color.LightGray, modifier = Modifier.offset(x = 10.dp))
                 Spacer(modifier = Modifier.height(10.dp))
@@ -332,18 +320,6 @@ fun AddMemberPage() {
                         }
                     }
                 }
-//                OutlinedTextField(value = year, onValueChange = {year = it},
-//                    label = { Text(text = "Year", color = Color.Gray)},
-//                    colors = TextFieldDefaults.textFieldColors(TextWhite, unfocusedTextColor = TextWhite, containerColor = Color.Transparent),
-//                    singleLine = true,
-//                    textStyle = MaterialTheme.typography.bodyLarge,
-//                    modifier = Modifier
-//                        .fillMaxWidth(0.95F)
-//                        .focusRequester(focusRequesters[5])
-//                        .align(Alignment.CenterHorizontally),
-//                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next, keyboardType = KeyboardType.Number),
-//                    keyboardActions = KeyboardActions(onNext = { focusRequesters[6].requestFocus() }),
-//                )
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(text = "Department", color = Color.LightGray, modifier = Modifier.offset(x = 10.dp))
                 Spacer(modifier = Modifier.height(10.dp))
@@ -373,18 +349,6 @@ fun AddMemberPage() {
                         }
                     }
                 }
-//                OutlinedTextField(value = department, onValueChange = {department = it},
-//                    label = { Text(text = "Department", color = Color.Gray)},
-//                    colors = TextFieldDefaults.textFieldColors(TextWhite, unfocusedTextColor = TextWhite, containerColor = Color.Transparent),
-//                    singleLine = true,
-//                    textStyle = MaterialTheme.typography.bodyLarge,
-//                    modifier = Modifier
-//                        .fillMaxWidth(0.95F)
-//                        .focusRequester(focusRequesters[6])
-//                        .align(Alignment.CenterHorizontally),
-//                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-//                    keyboardActions = KeyboardActions(onNext = { focusRequesters[7].requestFocus() }),
-//                )
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(text = "Residence", color = Color.LightGray, modifier = Modifier.offset(x = 10.dp))
                 Spacer(modifier = Modifier.height(10.dp))

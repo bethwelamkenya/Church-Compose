@@ -1,24 +1,33 @@
 package com.bethwelamkenya.churchcompose.pages
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.input.*
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import com.bethwelamkenya.churchcompose.ui.layouts.AdminHomePage
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat.startActivity
+import com.bethwelamkenya.churchcompose.R
+import com.bethwelamkenya.churchcompose.database.DatabaseAdapter
+import com.bethwelamkenya.churchcompose.ui.layouts.admin.AdminHomePage
 import com.bethwelamkenya.churchcompose.ui.theme.ChurchComposeTheme
 
 class MainActivity : ComponentActivity() {
@@ -32,8 +41,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    AdminHomePage()
-//                    Greeting("Android")
+//                    AdminHomePage()
+                    Greeting("Android")
                 }
             }
         }
@@ -42,9 +51,20 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Greeting(name: String) {
+    val context = LocalContext.current
+    val accounts = arrayOf("Admin", "Member", "Admin")
     var userName by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var account by remember { mutableStateOf("") }
+    var account by remember { mutableStateOf(accounts[0]) }
+    var enabled by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(false) }
+    var iconPath by remember { mutableStateOf(R.drawable.visible) }
+    var visibility by remember { mutableStateOf(VisualTransformation {
+        TransformedText(
+            AnnotatedString('\u2022'.toString().repeat(password.length)),
+            OffsetMapping.Identity
+        )
+    }) }
     ConstraintLayout (modifier = Modifier.fillMaxWidth()) {
         // Create references for the composables to constrain
         val (submit, forgotText, forgotLink, accountTypes, accountText, passwordText,
@@ -115,7 +135,14 @@ fun Greeting(name: String) {
                     end.linkTo(parent.end)
                 },
             value = userName,
-            onValueChange = { userName = it },
+            onValueChange = {
+                userName = it
+                enabled = if (accounts.indexOf(account) == 1){
+                    userName.isNotEmpty()
+                } else{
+                    password.isNotEmpty() && userName.isNotEmpty()
+                }
+                            },
             maxLines = 1,
             singleLine = true,
             label = { Text("Enter your name") }
@@ -129,28 +156,61 @@ fun Greeting(name: String) {
                     end.linkTo(parent.end)
                 },
             value = password,
-            onValueChange = { password = it },
+            onValueChange = { 
+                password = it
+                enabled = if (accounts.indexOf(account) == 1){
+                    userName.isNotEmpty()
+                } else{
+                    password.isNotEmpty() && userName.isNotEmpty()
+                }
+                            },
             maxLines = 1,
             singleLine = true,
-            visualTransformation = PasswordVisualTransformation(),
+            visualTransformation = visibility,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            label = { Text("Enter Password") }
+            label = { Text("Enter Password") },
+            trailingIcon = {
+                Icon(painter = painterResource(iconPath),
+                    contentDescription = "See Password",
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clickable(enabled = password.isNotEmpty(), onClick = {
+                            if (visibility == VisualTransformation.None) {
+                                visibility = PasswordVisualTransformation()
+                                iconPath = R.drawable.visible
+                            } else {
+                                visibility = VisualTransformation.None
+                                iconPath = R.drawable.invisible
+                            }
+                        })
+                )
+            }
         )
-        OutlinedTextField(
-            modifier = Modifier
-                .fillMaxWidth(0.9F)
-                .constrainAs(accountTypes) {
-                    top.linkTo(accountText.bottom, 16.dp)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                },
-            value = account,
-            onValueChange = { account = it },
-            maxLines = 1,
-            singleLine = true,
-            label = { Text("Enter Password") }
-        )
-        Button(onClick = { logIn() },
+        Box(modifier = Modifier.constrainAs(accountTypes) {
+                top.linkTo(accountText.bottom, 16.dp)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+            }) {
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.clickable{
+                    expanded = !expanded
+                }
+            ){
+                Text(text = account)
+                Icon(painter = painterResource(id = R.drawable.expand_arrow), contentDescription = "Expand", modifier = Modifier.size(20.dp))
+            }
+            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = !expanded }) {
+                accounts.forEach {
+                    DropdownMenuItem(text = { Text(text = it) }, onClick = {
+                        account = it
+                        expanded = !expanded
+                    })
+                }
+            }
+
+        }
+        Button(onClick = { logIn(userName, password, account, context) },
+            enabled = enabled,
             modifier = Modifier
                 .constrainAs(submit) {
                     top.linkTo(accountTypes.bottom, 16.dp)
@@ -187,7 +247,36 @@ fun validateData(){
 
 }
 
-fun logIn(){}
+fun logIn(userName: String, password: String, account: String, context: Context) {
+    val adapter = DatabaseAdapter(context)
+    when (account){
+        "Admin" -> {
+            if (adapter.getAdmin(userName, password) != null){
+                val intent = Intent(context, AdminActivity::class.java)
+                ActivityCompat.startActivity(context, intent, null)
+            } else{
+                Toast.makeText(context, "Invalid Details Passed", Toast.LENGTH_SHORT).show()
+            }
+        }
+        "Developer" -> {
+            if (userName == "bethu" && password == "9852"){
+                val intent = Intent(context, AdminActivity::class.java)
+                ActivityCompat.startActivity(context, intent, null)
+            } else{
+                Toast.makeText(context, "Invalid Details Passed", Toast.LENGTH_SHORT).show()
+            }
+        }
+        else -> {
+            if (adapter.getMember(userName).size == 0){
+                val intent = Intent(context, AdminActivity::class.java)
+                ActivityCompat.startActivity(context, intent, null)
+            } else{
+                Toast.makeText(context, "Invalid Details Passed", Toast.LENGTH_SHORT).show()
+            }
+
+        }
+    }
+}
 
 
 @OptIn(ExperimentalMaterial3Api::class)
